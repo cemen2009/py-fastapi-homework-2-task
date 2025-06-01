@@ -18,6 +18,8 @@ from schemas.movies import (
     MovieUpdate, MoviePatch
 )
 
+from src.schemas.movies import MovieListItemSchema, MovieListResponseSchema
+
 
 async def get_movies(
         request: Request,
@@ -33,9 +35,7 @@ async def get_movies(
         .limit(per_page)
     )
     movies = movies_result.scalars().all()
-
-    if not movies:
-        raise HTTPException(status_code=404, detail="No movies found.")
+    movie_items = [MovieListItemSchema.model_validate(movie) for movie in movies]
 
     count_result = await db.execute(select(func.count()).select_from(MovieModel))
     total_movies = count_result.scalar()
@@ -46,13 +46,13 @@ async def get_movies(
     prev_page = f"{query_base}?page={page - 1}&per_page={per_page}" if page > 1 else None
     next_page = f"{query_base}?page={page + 1}&per_page={per_page}" if page < total_pages else None
 
-    return {
-        "prev_page": prev_page,
-        "next_page": next_page,
-        "total_pages": total_pages,
-        "total_items": total_movies,
-        "movies": movies
-    }
+    return MovieListResponseSchema(
+        prev_page=prev_page,
+        next_page=next_page,
+        total_pages=total_pages,
+        total_items=total_movies,
+        movies=movie_items
+    )
 
 
 async def get_movie(movie_id: int, db: AsyncSession):
