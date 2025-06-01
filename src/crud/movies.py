@@ -35,11 +35,18 @@ async def get_movies(
         .limit(per_page)
     )
     movies = movies_result.scalars().all()
+
     movie_items = [MovieListItemSchema.model_validate(movie) for movie in movies]
 
     count_result = await db.execute(select(func.count()).select_from(MovieModel))
     total_movies = count_result.scalar()
     total_pages = (total_movies + per_page - 1) // per_page
+
+    if not movies and page > 1:
+        raise HTTPException(status_code=404, detail="Page not found")
+
+    if not movies and total_movies == 0:
+        raise HTTPException(status_code=404, detail="No movies found")
 
     url_path = request.url.path
     query_base = f"{url_path}"
