@@ -1,6 +1,6 @@
 from datetime import date
 
-from pydantic import HttpUrl, BaseModel
+from pydantic import HttpUrl, BaseModel, ConfigDict
 
 
 # TODO: create enum for status of the movie
@@ -12,6 +12,8 @@ class MovieDetailSchema(BaseModel):
     date: date
     score: float
     overview: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class MovieListResponseSchema(BaseModel):
