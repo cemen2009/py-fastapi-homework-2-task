@@ -1,14 +1,14 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from sqlalchemy import select, func
+from sqlalchemy import select, func, desc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from database import get_db, MovieModel
 from database.models import CountryModel, GenreModel, ActorModel, LanguageModel
-from schemas import MovieListResponseSchema
+from schemas import MovieListResponseSchema, MovieDetailResponseSchema
 
 
 router = APIRouter()
@@ -22,12 +22,17 @@ router = APIRouter()
 async def get_movies(
         request: Request,
         db: AsyncSession = Depends(get_db),
-        per_page: Annotated[int, Query(ge=1, le=20)] = 10,
         page: Annotated[int, Query(ge=1)] = 1,
+        per_page: Annotated[int, Query(ge=1, le=20)] = 10,
 ):
-    # calculating offset and fetching movies
+    # calculating offset and fetching movies ordering by ID in descending order
     offset = (page - 1) * per_page
-    result = await db.execute(select(MovieModel).offset(offset).limit(per_page))
+    result = await db.execute(
+        select(MovieModel)
+        .order_by(desc(MovieModel.id))
+        .offset(offset)
+        .limit(per_page)
+    )
     movies = result.scalars().all()
 
     if movies is None:
@@ -52,3 +57,14 @@ async def get_movies(
         "total_pages": total_pages,
         "total_items": total_items,
     }
+
+
+@router.post(
+    "/movies/",
+    response_model=MovieDetailResponseSchema
+)
+async def create_movie(
+        movie: MovieDetailResponseSchema,
+        db: AsyncSession = Depends(get_db)
+):
+    ...

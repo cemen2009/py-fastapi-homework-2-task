@@ -6,7 +6,7 @@ from pydantic import HttpUrl, BaseModel, ConfigDict
 # TODO: create enum for status of the movie
 
 
-class MovieDetailSchema(BaseModel):
+class MovieDetailResponseSchema(BaseModel):
     id: int
     name: str
     date: date
@@ -17,8 +17,11 @@ class MovieDetailSchema(BaseModel):
 
 
 class MovieListResponseSchema(BaseModel):
-    movies: list[MovieDetailSchema]
+    movies: list[MovieDetailResponseSchema]
     prev_page: HttpUrl | None
     next_page: HttpUrl | None
     total_pages: int
     total_items: int
+
+
+# TODO: create schema for creation of a movie
