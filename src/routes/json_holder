@@ -1,0 +1,22 @@
+{
+  "name": "Test Film",
+  "date": "2026-09-21",
+  "score": 6.7,
+  "overview": "A test film for testing purpose. It should check how app handles constraints breaking and default item saving.",
+  "status": "Post Production",
+  "budget": 1400000,
+  "revenue": 3100800,
+  "country": "FRA",
+  "genres": [
+    "Adventure",
+    "Horror"
+  ],
+  "actors": [
+    "Thierry Henry",
+    "Federico Chiesa"
+  ],
+  "languages": [
+    "English",
+    "Spanish"
+  ]
+}
