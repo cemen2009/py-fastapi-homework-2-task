@@ -9,7 +9,7 @@ from sqlalchemy import Enum as SQLAlchemyEnum
 
 class Base(DeclarativeBase):
     @classmethod
-    def default_order_by(cls):
+    def default_order_by(cls) -> list | None:
         return None
 
 
@@ -121,8 +121,8 @@ class MovieModel(Base):
     status: Mapped[MovieStatusEnum] = mapped_column(
         SQLAlchemyEnum(MovieStatusEnum), nullable=False
     )
-    budget: Mapped[float] = mapped_column(DECIMAL(15, 2), nullable=False)
-    revenue: Mapped[float] = mapped_column(Float, nullable=False)
+    budget: Mapped[DECIMAL] = mapped_column(DECIMAL(15, 2), nullable=False)
+    revenue: Mapped[DECIMAL] = mapped_column(DECIMAL, nullable=False)
 
     country_id: Mapped[int] = mapped_column(ForeignKey("countries.id"), nullable=False)
     country: Mapped["CountryModel"] = relationship("CountryModel", back_populates="movies")
@@ -150,7 +150,7 @@ class MovieModel(Base):
     )
 
     @classmethod
-    def default_order_by(cls):
+    def default_order_by(cls) -> list:
         return [cls.id.desc()]
 
     def __repr__(self):
